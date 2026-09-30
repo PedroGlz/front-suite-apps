@@ -1,0 +1,34 @@
+<app-portal-header />
+<main class="content">
+  <a routerLink="/apps" class="back"><i class="pi pi-arrow-left" aria-hidden="true"></i> Mis aplicaciones</a>
+  @if(loading()){
+    <div class="state-panel" role="status"><i class="pi pi-spin pi-spinner" aria-hidden="true"></i><h2>Cargando aplicación</h2></div>
+  } @else if(!app()){
+    <div class="state-panel" role="alert"><i class="pi pi-lock" aria-hidden="true"></i><h2>Aplicación no disponible</h2><p>{{ error() }}</p></div>
+  } @else {
+    <div class="page-heading"><span class="eyebrow">APLICACIÓN AUTORIZADA</span><h1>{{ app()!.name }}</h1><p>{{ app()!.code }}</p></div>
+    @if(error()){<p class="notice" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i>{{ error() }}</p>}
+    <div class="section-heading"><div><h2>Versiones publicadas</h2><p>Selecciona la versión que deseas instalar en tu dispositivo.</p></div><p-tag [value]="versions().length + (versions().length === 1 ? ' disponible' : ' disponibles')" severity="secondary" /></div>
+    @if(versions().length === 0){
+      <div class="state-panel"><i class="pi pi-inbox" aria-hidden="true"></i><h2>Sin versiones publicadas</h2><p>Aún no hay un APK disponible para descargar.</p></div>
+    }
+    @for(version of versions();track version.id){
+      <article class="version-card">
+        <div class="version-head">
+          <div><span class="eyebrow">VERSIÓN</span><h3>{{ version.versionName }}</h3></div>
+          <div class="badges"><p-tag value="Publicada" severity="success" />@if(version.mandatory){<p-tag value="Obligatoria" severity="warn" />}</div>
+        </div>
+        <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div><dt>VersionCode</dt><dd>{{ version.versionCode }}</dd></div>
+          <div><dt>Android mínimo</dt><dd>{{ version.minimumAndroid || 'No especificado' }}</dd></div>
+          <div><dt>Tamaño</dt><dd>{{ version.fileSize / 1048576 | number:'1.2-2' }} MB</dd></div>
+          <div><dt>Fecha de versión</dt><dd>{{ version.createdAt | date:'mediumDate' }}</dd></div>
+        </dl>
+        @if(version.releaseNotes){<section class="notes"><h4>Notas de versión</h4><p>{{ version.releaseNotes }}</p></section>}
+        <div class="version-foot"><div class="checksum"><span>SHA-256</span><code [title]="version.sha256">{{ version.sha256 }}</code></div>
+          <p-button label="Descargar APK" icon="pi pi-download" [loading]="downloading() === version.id"
+            [disabled]="downloading() !== null" (onClick)="download(version)" /></div>
+      </article>
+    }
+  }
+</main>

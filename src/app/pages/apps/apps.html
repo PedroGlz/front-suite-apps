@@ -1,0 +1,37 @@
+<app-portal-header />
+<main class="content">
+  <div class="page-heading">
+    <p class="eyebrow">CATÁLOGO PERSONAL</p>
+    <h1>Mis aplicaciones</h1>
+    <p>Consulta y descarga las aplicaciones a las que tienes acceso vigente.</p>
+  </div>
+  @if(loading()){
+    <div class="state-panel" role="status"><i class="pi pi-spin pi-spinner" aria-hidden="true"></i><h2>Cargando aplicaciones</h2></div>
+  } @else if(error() && apps().length === 0){
+    <div class="state-panel" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i><h2>No se pudo cargar el catálogo</h2><p>{{ error() }}</p></div>
+  } @else if(apps().length === 0){
+    <div class="state-panel"><i class="pi pi-inbox" aria-hidden="true"></i><h2>No tienes aplicaciones disponibles</h2><p>Actualmente no tienes acceso a ninguna aplicación. Contacta al administrador si consideras que esto es incorrecto.</p></div>
+  } @else {
+    <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      @for(app of apps();track app.id){
+        <article class="app-card">
+          <div class="card-top"><span class="app-icon"><i class="pi pi-mobile" aria-hidden="true"></i></span>
+            <p-tag [value]="app.latestVersion ? 'Disponible' : 'Sin publicación'" [severity]="app.latestVersion ? 'success' : 'secondary'" /></div>
+          <div><h2>{{ app.name }}</h2><p class="code">{{ app.code }}</p></div>
+          <div class="card-data">
+            <div><span>Versión disponible</span><strong>{{ app.latestVersion?.versionName ?? '—' }}</strong></div>
+            <div><span>Android mínimo</span><strong>{{ app.latestVersion?.minimumAndroid ?? 'No especificado' }}</strong></div>
+            <div><span>Fecha de versión</span><strong>{{ app.latestVersion?.createdAt ? (app.latestVersion?.createdAt | date:'mediumDate') : '—' }}</strong></div>
+          </div>
+          <div class="card-actions">
+            <a [routerLink]="['/apps', app.id]" class="detail-link">Ver detalles <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
+            @if(app.latestVersion){<p-button label="Descargar" icon="pi pi-download" size="small"
+              [loading]="downloading() === app.latestVersion.id"
+              [disabled]="downloading() !== null" (onClick)="download(app.latestVersion, app.code)" />}
+          </div>
+        </article>
+      }
+    </div>
+  }
+  @if(error() && apps().length > 0){<p class="notice" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i>{{ error() }}</p>}
+</main>

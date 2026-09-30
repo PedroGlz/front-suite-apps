@@ -1,0 +1,48 @@
+<main class="login-page portal-login">
+  <div class="theme-control">
+    <p-button [icon]="theme.mode() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'" [rounded]="true" [text]="true"
+      severity="secondary" [ariaLabel]="theme.mode() === 'dark' ? 'Usar tema claro' : 'Usar tema oscuro'"
+      (onClick)="theme.toggle()" />
+  </div>
+  <div class="login-layout">
+    <section class="brand-panel" aria-label="Portal ETIC">
+      <div class="brand-lockup"><img src="/img_etic_menu.png" alt="" class="brand-logo"><span>ETIC <strong>Online</strong></span></div>
+      <div class="brand-message">
+        <p class="eyebrow">ETIC ONLINE</p>
+        <h1>Portal de aplicaciones</h1>
+        <p>Accede a las aplicaciones autorizadas para tu cuenta y consulta sus versiones disponibles.</p>
+      </div>
+      <span class="brand-caption">ETIC · Portal de aplicaciones</span>
+    </section>
+    <section class="form-panel">
+      <div class="mobile-brand"><img src="/img_etic_menu.png" alt="" class="brand-logo"><span>ETIC <small>Portal de aplicaciones</small></span></div>
+      <div class="form-heading">
+        <span class="eyebrow">PORTAL DE APLICACIONES</span>
+        <h2>Iniciar sesión</h2>
+        <p>Ingresa con tu cuenta ETIC para continuar.</p>
+      </div>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="field">
+          <label for="username">Usuario</label>
+          <span class="input-icon"><i class="pi pi-user" aria-hidden="true"></i>
+            <input pInputText id="username" type="text" autocomplete="username" formControlName="username"
+              [attr.aria-invalid]="form.controls.username.touched && form.controls.username.invalid"
+              aria-describedby="username-error" autofocus /></span>
+          <small id="username-error">@if(form.controls.username.touched && form.controls.username.invalid){Ingresa tu usuario.}</small>
+        </div>
+        <div class="field">
+          <label for="password">Contraseña</label>
+          <p-password inputId="password" formControlName="password" [toggleMask]="true" [feedback]="false"
+            [fluid]="true" autocomplete="current-password"
+            [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
+            aria-describedby="password-error" />
+          <small id="password-error">@if(form.controls.password.touched && form.controls.password.invalid){Ingresa tu contraseña.}</small>
+        </div>
+        @if(error()){<p class="error-message" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i>{{ error() }}</p>}
+        <p-button type="submit" label="Iniciar sesión" icon="pi pi-arrow-right" iconPos="right"
+          [loading]="busy()" [disabled]="busy()" [fluid]="true" />
+      </form>
+      <p class="form-foot">Acceso exclusivo para usuarios autorizados.</p>
+    </section>
+  </div>
+</main>

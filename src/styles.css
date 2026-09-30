@@ -1,0 +1,57 @@
+@import "tailwindcss";
+@import 'primeicons/primeicons.css';
+
+:root {
+  --brand-primary: #1753e7;
+  --brand-sidebar: #071619;
+  --brand-primary-hover: #1448cc;
+  --brand-primary-contrast: #fff;
+  --brand-primary-50: #eff6ff;
+  --brand-surface-0: #fff;
+  --brand-surface-50: #f7fafc;
+  --brand-surface-100: #f3f6f9;
+  --brand-surface-200: #edf1f5;
+  --brand-surface-300: #cbd5df;
+  --brand-surface-900: #172331;
+  --brand-text-primary: #20384e;
+  --brand-text-secondary: #5b7388;
+  --brand-border-default: #cbd5df;
+  --page-background: var(--brand-surface-100);
+  --card-background: var(--brand-surface-0);
+  --soft-background: var(--brand-surface-50);
+  --focus-ring: #1753e7;
+}
+
+html.app-dark {
+  --brand-primary: #60a5fa;
+  --brand-primary-hover: #93c5fd;
+  --brand-primary-contrast: #172331;
+  --brand-primary-50: #123c4b;
+  --brand-text-primary: #dbe7f1;
+  --brand-text-secondary: #9eb0c1;
+  --brand-border-default: #304456;
+  --page-background: #0f1722;
+  --card-background: #172331;
+  --soft-background: #1d2c3d;
+  --focus-ring: #93c5fd;
+}
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body {
+  background: var(--page-background);
+  color: var(--brand-text-primary);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+button, input, textarea { font: inherit; }
+a { color: var(--brand-primary); }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+.p-inputtext { width: 100%; }
+.portal-login .p-inputtext,
+.portal-login .p-password input,
+.portal-login .p-button { min-height: 2.75rem; }
+html.app-dark .portal-login .p-inputtext {
+  background: #13212f;
+  color: #e4edf5;
+  border-color: #3b556a;
+}
