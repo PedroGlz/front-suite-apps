@@ -1,3 +1,4 @@
+import { apiErrorMessage } from '../../core/api-error';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -26,6 +27,7 @@ export class LoginPage {
   });
 
   submit(): void {
+    if (this.busy()) return;
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.busy.set(true);
     this.error.set('');
@@ -34,10 +36,9 @@ export class LoginPage {
       next: () => { this.busy.set(false); void this.router.navigateByUrl('/apps'); },
       error: (error: HttpErrorResponse) => {
         this.busy.set(false);
-        const detail = typeof error.error?.detail === 'string' ? error.error.detail : null;
         this.error.set(error.status === 0
           ? 'No se pudo conectar con el servidor. Comprueba que esté disponible y revisa CORS.'
-          : detail ?? (error.status === 401 ? 'Usuario o contraseña incorrectos' : `Error HTTP ${error.status} al iniciar sesión.`));
+          : apiErrorMessage(error, 'No fue posible iniciar sesión.'));
       }
     });
   }

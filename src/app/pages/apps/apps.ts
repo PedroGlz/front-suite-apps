@@ -1,3 +1,4 @@
+import { apiErrorMessage } from '../../core/api-error';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PortalApi } from '../../core/portal.api';
@@ -26,7 +27,7 @@ export class AppsPage {
       next: apps => { this.apps.set(apps); this.loading.set(false); },
       error: response => {
         this.loading.set(false);
-        this.error.set(response.status === 403 ? 'Tu usuario no está activo.' : 'No se pudo cargar el catálogo.');
+        this.error.set(apiErrorMessage(response, 'No se pudo cargar el catálogo.'));
       }
     });
   }
@@ -39,13 +40,13 @@ export class AppsPage {
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement('a');
         anchor.href = url;
-        anchor.download = `${code}-${version.versionCode}.apk`;
+        anchor.download = `${code}-${version.versionName.replace(/[\\/:*?"<>|]/g, '_')}.apk`;
         anchor.click();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       },
-      error: () => {
+      error: response => {
         this.downloading.set(null);
-        this.error.set('Descarga denegada o archivo no disponible. Actualiza la página e inténtalo de nuevo.');
+        this.error.set(apiErrorMessage(response, 'Descarga denegada o archivo no disponible. Actualiza la página e inténtalo de nuevo.'));
       }
     });
   }

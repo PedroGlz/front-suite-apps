@@ -1,4 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { apiErrorMessage } from '../../core/api-error';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -32,7 +33,7 @@ export class AppDetailPage {
       },
       error: response => {
         this.loading.set(false);
-        this.error.set(response.status === 404 ? 'No tienes acceso a esta aplicación.' : 'No se pudo cargar la aplicación.');
+        this.error.set(apiErrorMessage(response, 'No se pudo cargar la aplicación.'));
       }
     });
   }
@@ -46,13 +47,13 @@ export class AppDetailPage {
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement('a');
         anchor.href = url;
-        anchor.download = `${this.app()?.code ?? 'etic'}-${version.versionCode}.apk`;
+        anchor.download = `${this.app()?.code ?? 'etic'}-${version.versionName.replace(/[\\/:*?"<>|]/g, '_')}.apk`;
         anchor.click();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       },
-      error: () => {
+      error: response => {
         this.downloading.set(null);
-        this.error.set('Descarga denegada o archivo no disponible. Actualiza la página e inténtalo de nuevo.');
+        this.error.set(apiErrorMessage(response, 'Descarga denegada o archivo no disponible. Actualiza la página e inténtalo de nuevo.'));
       }
     });
   }

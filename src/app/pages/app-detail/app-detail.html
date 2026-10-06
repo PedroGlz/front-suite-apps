@@ -19,7 +19,6 @@
           <div class="badges"><p-tag value="Publicada" severity="success" />@if(version.mandatory){<p-tag value="Obligatoria" severity="warn" />}</div>
         </div>
         <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div><dt>VersionCode</dt><dd>{{ version.versionCode }}</dd></div>
           <div><dt>Android mínimo</dt><dd>{{ version.minimumAndroid || 'No especificado' }}</dd></div>
           <div><dt>Tamaño</dt><dd>{{ version.fileSize / 1048576 | number:'1.2-2' }} MB</dd></div>
           <div><dt>Fecha de versión</dt><dd>{{ version.createdAt | date:'mediumDate' }}</dd></div>

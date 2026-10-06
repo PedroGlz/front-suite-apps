@@ -6,12 +6,12 @@ import { PortalApplication, Version } from './models';
 @Injectable({ providedIn: 'root' })
 export class PortalApi {
   private readonly http = inject(HttpClient);
-  private readonly base = `${environment.apiBaseUrl}/api/portal`;
+  private readonly base = `${environment.apiBaseUrl}/portal`;
 
-  apps() { return this.http.get<PortalApplication[]>(`${this.base}/apps`, { withCredentials: true }); }
-  app(id: string) { return this.http.get<PortalApplication>(`${this.base}/apps/${encodeURIComponent(id)}`, { withCredentials: true }); }
-  versions(id: string) { return this.http.get<Version[]>(`${this.base}/apps/${encodeURIComponent(id)}/versions`, { withCredentials: true }); }
+  apps() { return this.http.get<PortalApplication[]>(`${this.base}/apps`); }
+  app(id: string) { return this.http.get<PortalApplication>(`${this.base}/apps/${encodeURIComponent(id)}`); }
+  versions(id: string) { return this.http.get<Version[]>(`${this.base}/apps/${encodeURIComponent(id)}/versions`); }
   download(id: string) {
-    return this.http.get(`${this.base}/downloads/${encodeURIComponent(id)}`, { withCredentials: true, responseType: 'blob' });
+    return this.http.get(`${this.base}/downloads/${encodeURIComponent(id)}`, { responseType: 'blob' });
   }
 }

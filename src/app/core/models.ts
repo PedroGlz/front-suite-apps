@@ -2,7 +2,10 @@ export interface AuthenticatedUser {
   id: string;
   username: string;
   name: string;
-  groupName: string;
+  system: string;
+  roles: string[];
+  permissions: string[];
+  systemAdmin: boolean;
 }
 
 export interface Version {
@@ -10,7 +13,6 @@ export interface Version {
   applicationId: string;
   applicationName: string;
   versionName: string;
-  versionCode: number;
   sha256: string;
   fileSize: number;
   releaseNotes: string | null;
