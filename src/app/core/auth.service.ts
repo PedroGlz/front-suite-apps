@@ -19,13 +19,21 @@ export class AuthService {
   token(): string | null { return sessionStorage.getItem(TOKEN_KEY); }
 
   login(username: string, password: string) {
-    return this.http.post<{ token: string; user: Profile }>(this.base + '/system-login', {
+    return this.http.post<{ token: string; user: Profile; passwordChangeRequired?: boolean }>(this.base + '/system-login', {
       username, password, system: environment.systemCode,
     }).pipe(map(response => {
-      const user = this.saveProfile(response.user);
       sessionStorage.setItem(TOKEN_KEY, response.token);
-      return user;
+      if (response.passwordChangeRequired) { sessionStorage.removeItem(USER_KEY); this.user.set(null); return { passwordChangeRequired: true }; }
+      return { passwordChangeRequired: false, user: this.saveProfile(response.user) };
     }));
+  }
+
+  requestPasswordReset(identifier: string) {
+    return this.http.post<{message:string}>(this.base + '/password-reset-requests', {identifier, system: environment.systemCode});
+  }
+
+  changeRequiredPassword(currentPassword: string, newPassword: string) {
+    return this.http.put<void>(this.base + '/required-password', {currentPassword, newPassword}).pipe(tap(() => this.clearSession()));
   }
 
   me() {

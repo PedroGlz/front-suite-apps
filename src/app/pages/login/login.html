@@ -21,7 +21,11 @@
         <h2>Iniciar sesión</h2>
         <!-- <p>Ingresa con tu cuenta ETIC para continuar.</p> -->
       </div>
-      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if(passwordChange()){
+      <form (ngSubmit)="changePassword()" novalidate><div class="field"><label>Contraseña temporal</label><p-password [(ngModel)]="temporaryPassword" name="temporaryPassword" [toggleMask]="true" [feedback]="false" [fluid]="true" /></div><div class="field"><label>Nueva contraseña</label><p-password [(ngModel)]="newPassword" name="newPassword" [toggleMask]="true" [feedback]="true" [fluid]="true" /></div><div class="field"><label>Confirmar contraseña</label><p-password [(ngModel)]="confirmation" name="confirmation" [toggleMask]="true" [feedback]="false" [fluid]="true" /></div><p-button type="submit" label="Actualizar contraseña" [loading]="busy()" [disabled]="busy()||newPassword.length<8||newPassword!==confirmation" [fluid]="true" /></form>
+      } @else if(recovery()){
+      <form (ngSubmit)="requestReset()"><div class="field"><label>Correo electrónico o nombre de usuario</label><input pInputText [value]="form.controls.username.value" (input)="form.controls.username.setValue($any($event.target).value)" autocomplete="username"></div><p-button type="submit" label="Solicitar restablecimiento" [loading]="busy()" [fluid]="true" /><p-button type="button" label="Cancelar" severity="secondary" [text]="true" [fluid]="true" (onClick)="recovery.set(false)" /></form>
+      } @else {<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
         <div class="field">
           <label for="username">Usuario</label>
           <span class="input-icon"><i class="pi pi-user" aria-hidden="true"></i>
@@ -41,7 +45,8 @@
         @if(error()){<p class="error-message" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i>{{ error() }}</p>}
         <p-button type="submit" label="Iniciar sesión" icon="pi pi-arrow-right" iconPos="right"
           [loading]="busy()" [disabled]="busy()" [fluid]="true" />
-      </form>
+        <p-button type="button" label="¿Olvidaste tu contraseña?" [text]="true" [fluid]="true" (onClick)="recovery.set(true)" />
+      </form>}
       <p class="form-foot">Acceso exclusivo para usuarios autorizados.</p>
     </section>
   </div>
