@@ -21,6 +21,8 @@ export class LoginPage {
   readonly theme = inject(ThemeService);
   readonly busy = signal(false);
   readonly error = signal('');
+  readonly notice = signal('');
+  readonly noticeType = signal<'success'|'warning'|'error'>('success');
   readonly recovery = signal(false);
   readonly passwordChange = signal(false);
   temporaryPassword = '';
@@ -47,6 +49,7 @@ export class LoginPage {
       }
     });
   }
-  requestReset():void{const identifier=this.form.controls.username.value.trim();if(!identifier){this.error.set('Ingresa tu correo electrónico o nombre de usuario.');return;}this.busy.set(true);this.auth.requestPasswordReset(identifier).subscribe({next:r=>{this.busy.set(false);this.recovery.set(false);this.error.set(r.message);},error:()=>{this.busy.set(false);this.recovery.set(false);this.error.set('Si los datos corresponden a una cuenta registrada, recibirás una contraseña temporal en el correo configurado.');}});}
+  requestReset():void{const identifier=this.form.controls.username.value.trim();if(!identifier){this.noticeType.set('warning');this.notice.set('Ingresa tu correo electrónico o nombre de usuario.');return;}this.busy.set(true);this.error.set('');this.notice.set('');this.auth.requestPasswordReset(identifier).subscribe({next:r=>{this.busy.set(false);if(r.status==='ACCEPTED'){this.recovery.set(false);this.noticeType.set('success');this.notice.set(r.message);}else if(r.status==='RATE_LIMITED'){this.noticeType.set('warning');this.notice.set(`${r.message} ${this.waitText(r.retryAfterSeconds)}`);}else{this.noticeType.set('error');this.notice.set(r.message);}},error:e=>{this.busy.set(false);this.noticeType.set('error');this.notice.set(apiErrorMessage(e,'Reintenta más tarde o contacta a soporte.'));}});}
+  private waitText(seconds:number):string{const value=Math.max(1,Math.ceil(seconds));return value>=60?`Intenta nuevamente en ${Math.ceil(value/60)} min.`:`Intenta nuevamente en ${value} s.`;}
   changePassword():void{if(this.busy()||this.newPassword.length<8||this.newPassword!==this.confirmation)return;this.busy.set(true);this.auth.changeRequiredPassword(this.temporaryPassword,this.newPassword).subscribe({next:()=>{this.busy.set(false);this.passwordChange.set(false);this.form.reset();this.temporaryPassword='';this.newPassword='';this.confirmation='';this.error.set('Contraseña actualizada. Inicia sesión nuevamente.');},error:e=>{this.busy.set(false);this.error.set(apiErrorMessage(e,'No fue posible actualizar la contraseña.'));}});}
 }

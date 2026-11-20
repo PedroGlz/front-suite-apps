@@ -9,6 +9,7 @@ const USER_KEY = 'suite_user';
 type Profile = Omit<AuthenticatedUser, 'name'> & {
   firstName?: string; lastName?: string; secondLastName?: string;
 };
+export interface PasswordResetResult { status: 'ACCEPTED' | 'RATE_LIMITED' | 'PROCESSING_FAILED'; message: string; retryAfterSeconds: number }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -29,7 +30,7 @@ export class AuthService {
   }
 
   requestPasswordReset(identifier: string) {
-    return this.http.post<{message:string}>(this.base + '/password-reset-requests', {identifier, system: environment.systemCode});
+    return this.http.post<PasswordResetResult>(this.base + '/password-reset-requests', {identifier, system: environment.systemCode});
   }
 
   changeRequiredPassword(currentPassword: string, newPassword: string) {
