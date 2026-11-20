@@ -21,7 +21,7 @@
           <div class="card-data">
             <div><span>Versión disponible</span><strong>{{ app.latestVersion?.versionName ?? '—' }}</strong></div>
             <div><span>Android mínimo</span><strong>{{ app.latestVersion?.minimumAndroid ?? 'No especificado' }}</strong></div>
-            <div><span>Fecha de versión</span><strong>{{ app.latestVersion?.createdAt ? (app.latestVersion?.createdAt | date:'mediumDate') : '—' }}</strong></div>
+            <div><span>Fecha de versión</span><strong>{{ app.latestVersion?.createdAt ? (app.latestVersion?.createdAt | mexicoDate) : '—' }}</strong></div>
           </div>
           <div class="card-actions">
             <a [routerLink]="['/apps', app.id]" class="detail-link">Ver detalles <i class="pi pi-arrow-right" aria-hidden="true"></i></a>

@@ -4,14 +4,14 @@ import { RouterLink } from '@angular/router';
 import { PortalApi } from '../../core/portal.api';
 import { PortalApplication } from '../../core/models';
 import { PortalHeader } from '../../shared/portal-header/portal-header';
-import { DatePipe } from '@angular/common';
+import { MexicoDatePipe } from '../../core/mexico-date.pipe';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { Version } from '../../core/models';
 
 @Component({
   selector: 'app-apps',
-  imports: [RouterLink, PortalHeader, DatePipe, ButtonModule, TagModule],
+  imports: [RouterLink, PortalHeader, MexicoDatePipe, ButtonModule, TagModule],
   templateUrl: './apps.html',
   styleUrl: './apps.scss'
 })

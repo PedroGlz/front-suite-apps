@@ -1,4 +1,5 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
+import { MexicoDatePipe } from '../../core/mexico-date.pipe';
 import { apiErrorMessage } from '../../core/api-error';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -11,7 +12,7 @@ import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-detail',
-  imports: [DatePipe, DecimalPipe, RouterLink, PortalHeader, ButtonModule, TagModule],
+  imports: [MexicoDatePipe, DecimalPipe, RouterLink, PortalHeader, ButtonModule, TagModule],
   templateUrl: './app-detail.html',
   styleUrl: './app-detail.scss'
 })
