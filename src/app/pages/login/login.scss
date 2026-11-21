@@ -40,12 +40,15 @@ form { display: grid; gap: .85rem; margin-top: 2rem; }
 :host ::ng-deep .p-password input { padding-right: 2.75rem; }
 .error-message { display: flex; gap: .5rem; align-items: flex-start; padding: .75rem; margin: 0; border-radius: .5rem; background: var(--soft-background); color: #b42318; font-size: .85rem; }
 .status-message { display: flex; gap: .5rem; align-items: flex-start; padding: .75rem; margin: 1rem 0 0; border-radius: .5rem; background: var(--soft-background); color: #187044; font-size: .85rem; }
+.status-message.info { color: var(--brand-primary); }
 .status-message.warning { color: #8a4b08; }
 .status-message.error { color: #b42318; }
 :host-context(.app-dark) .error-message { color: #ffb4aa; }
 :host-context(.app-dark) .status-message { color: #7ee2ad; }
+:host-context(.app-dark) .status-message.info { color: #93c5fd; }
 :host-context(.app-dark) .status-message.warning { color: #ffd18a; }
 :host-context(.app-dark) .status-message.error { color: #ffb4aa; }
+.field .recovery-help, .field .field-help { min-height: 0; color: var(--brand-text-secondary); line-height: 1.45; }
 .form-foot { margin: 2rem 0 0; font-size: .8rem; text-align: center; }
 @media (max-width: 767px) {
   .login-page { padding: 3.5rem 1rem 1rem; }
