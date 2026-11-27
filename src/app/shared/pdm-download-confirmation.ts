@@ -3,7 +3,9 @@ import Swal from 'sweetalert2';
 import { ThemeService } from '../core/theme.service';
 
 const WAIT_SECONDS = 10;
-const WAIT_MS = WAIT_SECONDS * 1000;
+const SECOND_MS = 1000;
+const WAIT_MS = WAIT_SECONDS * SECOND_MS;
+const INITIAL_LABEL = `Continuar en ${WAIT_SECONDS} s`;
 
 @Injectable()
 export class PdmDownloadConfirmation {
@@ -49,13 +51,18 @@ export class PdmDownloadConfirmation {
         `,
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
-        confirmButtonText: `Continuar en ${WAIT_SECONDS} s`,
+        confirmButtonText: INITIAL_LABEL,
         focusCancel: true,
         preConfirm: () => performance.now() >= deadline,
         willOpen: element => {
           popup = element;
           const button = Swal.getConfirmButton();
-          if (button) button.disabled = true;
+          if (button) {
+            button.disabled = true;
+            button.style.flexShrink = '0';
+            button.style.whiteSpace = 'nowrap';
+            button.style.fontVariantNumeric = 'tabular-nums';
+          }
         },
         didOpen: element => {
           const button = Swal.getConfirmButton();
@@ -71,19 +78,30 @@ export class PdmDownloadConfirmation {
           progress.style.cssText = 'position:absolute;inset:0;background:currentColor;opacity:.22;pointer-events:none;transform-origin:left';
           button.style.position = 'relative';
           button.style.overflow = 'hidden';
-          const label = document.createTextNode(`Continuar en ${WAIT_SECONDS} s`);
-          button.replaceChildren(label);
+
+          const labelSlot = document.createElement('span');
+          labelSlot.style.cssText = 'display:inline-grid;position:relative';
+          const widthReference = document.createElement('span');
+          widthReference.setAttribute('aria-hidden', 'true');
+          widthReference.style.cssText = 'grid-area:1 / 1;visibility:hidden';
+          widthReference.textContent = INITIAL_LABEL;
+          const label = document.createElement('span');
+          label.style.gridArea = '1 / 1';
+          label.textContent = INITIAL_LABEL;
+          labelSlot.append(widthReference, label);
+          button.replaceChildren(labelSlot);
+
           deadline = performance.now() + WAIT_MS;
           if (typeof progress.animate === 'function' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            button.append(progress);
+            button.prepend(progress);
             animation = progress.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: WAIT_MS, fill: 'forwards' });
           }
 
           const update = () => {
-            const seconds = Math.max(0, Math.ceil((deadline - performance.now()) / 11000));
+            const seconds = Math.max(0, Math.ceil((deadline - performance.now()) / SECOND_MS));
             const message = seconds ? `Continuar en ${seconds} s` : 'Continuar';
-            if (label.data !== message || !status.textContent) {
-              label.data = message;
+            if (label.textContent !== message || !status.textContent) {
+              label.textContent = message;
               status.textContent = seconds ? message : 'Continuar habilitado';
             }
             if (seconds === 0) {
