@@ -2,6 +2,9 @@ import { DestroyRef, inject, Injectable } from '@angular/core';
 import Swal from 'sweetalert2';
 import { ThemeService } from '../core/theme.service';
 
+const WAIT_SECONDS = 10;
+const WAIT_MS = WAIT_SECONDS * 1000;
+
 @Injectable()
 export class PdmDownloadConfirmation {
   private readonly destroyRef = inject(DestroyRef);
@@ -29,11 +32,23 @@ export class PdmDownloadConfirmation {
       const result = await Swal.fire({
         theme: this.theme.mode(),
         icon: 'warning',
-        title: 'Respalda tus datos de ETIC PdM',
-        text: 'Antes de instalar esta actualización, respalda tu información de ETIC PdM. La información guardada en el dispositivo se borrará durante la instalación. Para crear un respaldo, abre ETIC PdM y ve al menú de la aplicación → Generar respaldo.',
+        title: '<span style="display:block;text-align:start">Respalda tu información antes de actualizar</span>',
+        html: `
+          <div style="text-align:start;line-height:1.55">
+            <p style="margin:0 0 1rem;padding:.75rem 1rem;border-inline-start:4px solid #d97706;border-radius:.375rem;background:rgba(217,119,6,.12)">
+              La instalación de esta actualización <strong>borrará la información guardada en ETIC PdM</strong> en este dispositivo.
+            </p>
+            <p style="margin:0 0 .5rem">Antes de continuar, <strong>genera un respaldo</strong> desde la aplicación:</p>
+            <ol style="margin:0;padding-inline-start:1.5rem;list-style:decimal">
+              <li>Abre ETIC PdM.</li>
+              <li style="margin-block:.35rem">Entra al menú.</li>
+              <li>Selecciona <strong>“Generar respaldo”</strong> y guarda el archivo en un lugar seguro.</li>
+            </ol>
+          </div>
+        `,
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
-        confirmButtonText: 'Continuar en 4…',
+        confirmButtonText: `Continuar en ${WAIT_SECONDS} s`,
         focusCancel: true,
         preConfirm: () => performance.now() >= deadline,
         willOpen: element => {
@@ -43,7 +58,7 @@ export class PdmDownloadConfirmation {
         },
         didOpen: element => {
           const button = Swal.getConfirmButton();
-          if (this.destroyRef.destroyed || Swal.getPopup() !== element || !button) return;
+          if (this.destroyRef.destroyed || popup !== element || !button) return;
 
           const status = document.createElement('span');
           status.setAttribute('role', 'status');
@@ -52,19 +67,20 @@ export class PdmDownloadConfirmation {
 
           const progress = document.createElement('span');
           progress.setAttribute('aria-hidden', 'true');
-          progress.style.cssText = 'position:absolute;inset:auto 0 0;height:3px;background:currentColor;pointer-events:none;transform-origin:left';
+          progress.style.cssText = 'position:absolute;inset:0;background:currentColor;opacity:.22;pointer-events:none;transform-origin:left';
           button.style.position = 'relative';
-          const label = document.createTextNode('Continuar en 4…');
+          button.style.overflow = 'hidden';
+          const label = document.createTextNode(`Continuar en ${WAIT_SECONDS} s`);
           button.replaceChildren(label);
-          deadline = performance.now() + 4000;
+          deadline = performance.now() + WAIT_MS;
           if (typeof progress.animate === 'function' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             button.append(progress);
-            animation = progress.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 4000, fill: 'forwards' });
+            animation = progress.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: WAIT_MS, fill: 'forwards' });
           }
 
           const update = () => {
             const seconds = Math.max(0, Math.ceil((deadline - performance.now()) / 1000));
-            const message = seconds ? `Continuar en ${seconds}…` : 'Continuar';
+            const message = seconds ? `Continuar en ${seconds} s` : 'Continuar';
             if (label.data !== message || !status.textContent) {
               label.data = message;
               status.textContent = seconds ? message : 'Continuar habilitado';
@@ -78,7 +94,10 @@ export class PdmDownloadConfirmation {
           interval = setInterval(update, 100);
           update();
         },
-        willClose: cleanup,
+        willClose: () => {
+          popup = null;
+          cleanup();
+        },
         didDestroy: () => {
           cleanup();
           popup = null;
