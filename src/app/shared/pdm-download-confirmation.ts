@@ -36,13 +36,14 @@ export class PdmDownloadConfirmation {
         html: `
           <div style="text-align:start;line-height:1.55">
             <p style="margin:0 0 1rem;padding:.75rem 1rem;border-inline-start:4px solid #d97706;border-radius:.375rem;background:rgba(217,119,6,.12)">
-              La instalación de esta actualización <strong>borrará la información guardada en ETIC PdM</strong> en este dispositivo.
+              La instalación de esta actualización <strong>borrará la información guardada en ETIC PdM</strong> en tu tablet.
             </p>
             <p style="margin:0 0 .5rem">Antes de continuar, <strong>genera un respaldo</strong> desde la aplicación:</p>
             <ol style="margin:0;padding-inline-start:1.5rem;list-style:decimal">
               <li>Abre ETIC PdM.</li>
               <li style="margin-block:.35rem">Entra al menú.</li>
-              <li>Selecciona <strong>“Generar respaldo”</strong> y guarda el archivo en un lugar seguro.</li>
+              <li>Selecciona <strong>“Generar respaldo”</strong>.</li>
+               <li>Comprueba que el archivo se haya generado en <strong>ETIC/Respaldos/</strong>.</li>
             </ol>
           </div>
         `,
@@ -79,7 +80,7 @@ export class PdmDownloadConfirmation {
           }
 
           const update = () => {
-            const seconds = Math.max(0, Math.ceil((deadline - performance.now()) / 1000));
+            const seconds = Math.max(0, Math.ceil((deadline - performance.now()) / 11000));
             const message = seconds ? `Continuar en ${seconds} s` : 'Continuar';
             if (label.data !== message || !status.textContent) {
               label.data = message;
