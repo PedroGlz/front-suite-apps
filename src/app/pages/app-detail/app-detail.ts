@@ -9,15 +9,18 @@ import { PortalApplication, Version } from '../../core/models';
 import { PortalHeader } from '../../shared/portal-header/portal-header';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { PdmDownloadConfirmation } from '../../shared/pdm-download-confirmation';
 
 @Component({
   selector: 'app-detail',
   imports: [MexicoDatePipe, DecimalPipe, RouterLink, PortalHeader, ButtonModule, TagModule],
+  providers: [PdmDownloadConfirmation],
   templateUrl: './app-detail.html',
   styleUrl: './app-detail.scss'
 })
 export class AppDetailPage {
   private readonly api = inject(PortalApi);
+  private readonly pdmConfirmation = inject(PdmDownloadConfirmation);
   private readonly id = inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '';
   readonly app = signal<PortalApplication | null>(null);
   readonly versions = signal<Version[]>([]);
@@ -39,7 +42,10 @@ export class AppDetailPage {
     });
   }
 
-  download(version: Version): void {
+  async download(version: Version): Promise<void> {
+    if (this.app()?.code === 'ETIC_PDM') {
+      if (this.downloading() !== null || !(await this.pdmConfirmation.confirm())) return;
+    }
     this.downloading.set(version.id);
     this.error.set('');
     this.api.download(version.id).subscribe({

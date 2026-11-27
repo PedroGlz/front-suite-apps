@@ -8,15 +8,18 @@ import { MexicoDatePipe } from '../../core/mexico-date.pipe';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { Version } from '../../core/models';
+import { PdmDownloadConfirmation } from '../../shared/pdm-download-confirmation';
 
 @Component({
   selector: 'app-apps',
   imports: [RouterLink, PortalHeader, MexicoDatePipe, ButtonModule, TagModule],
+  providers: [PdmDownloadConfirmation],
   templateUrl: './apps.html',
   styleUrl: './apps.scss'
 })
 export class AppsPage {
   private readonly api = inject(PortalApi);
+  private readonly pdmConfirmation = inject(PdmDownloadConfirmation);
   readonly apps = signal<PortalApplication[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
@@ -32,7 +35,10 @@ export class AppsPage {
     });
   }
 
-  download(version: Version, code: string): void {
+  async download(version: Version, code: string): Promise<void> {
+    if (code === 'ETIC_PDM') {
+      if (this.downloading() !== null || !(await this.pdmConfirmation.confirm())) return;
+    }
     this.downloading.set(version.id);
     this.api.download(version.id).subscribe({
       next: blob => {
